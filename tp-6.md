@@ -107,6 +107,7 @@ require __DIR__ . '/wp-blog-header.php';
 
    3. Afficher les logs de votre container après avoir fait quelques requêtes, que voyez vous ?
      docker logs 9f2a1faf17d2
+        ```
         172.18.0.1 - - [05/Oct/2023:07:53:35 +0000] "GET / HTTP/1.1" 302 235 "-" "curl/7.74.0"
         172.18.0.1 - - [05/Oct/2023:07:56:36 +0000] "GET / HTTP/1.1" 302 235 "-" "curl/7.74.0"
         172.18.0.1 - - [05/Oct/2023:07:56:44 +0000] "GET /?authuser=0&redirectedPreviously=true HTTP/1.1" 302 235 "https://ssh.cloud.google.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
@@ -116,8 +117,8 @@ require __DIR__ . '/wp-blog-header.php';
         172.18.0.1 - - [05/Oct/2023:07:56:51 +0000] "POST /wp-admin/setup-config.php?step=0 HTTP/1.1" 200 1365 "https://8100-cs-744666710802-default.cs-europe-west1-iuzs.cloudshell.dev/wp-admin/setup-config.php" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
         172.18.0.1 - - [05/Oct/2023:07:56:55 +0000] "GET /favicon.ico HTTP/1.1" 302 235 "https://8100-cs-744666710802-default.cs-europe-west1-iuzs.cloudshell.dev/wp-admin/setup-config.php?step=0" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
         172.18.0.1 - - [05/Oct/2023:07:56:55 +0000] "GET /wp-admin/setup-config.php HTTP/1.1" 200 4474 "https://8100-cs-744666710802-default.cs-europe-west1-iuzs.cloudshell.dev/wp-admin/setup-config.php?step=0" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
-        
-   4. Utilisez l'aperçu web pour afficher le résultat du navigateur qui se connecte à votre container wordpress
+        ```
+   5. Utilisez l'aperçu web pour afficher le résultat du navigateur qui se connecte à votre container wordpress
       1. Utiliser la fonction `Aperçu sur le web`
         ![web_preview](images/wordpress_preview.png)
         
