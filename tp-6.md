@@ -61,8 +61,9 @@ Nous allons créer les ressources suivantes à l'aide de Terraform :
 5. Vérifier que notre utilisateur existe bien : https://console.cloud.google.com/sql/instances/main-instance/users (veiller à bien séléctionner le projet GCP sur lequel vous avez déployé vos ressources)
 6. Rendez-vous sur https://console.cloud.google.com/sql/instances/main-instance/databases. Quelles sont les base de données présentes sur votre instance `main-instance` ? Quels sont les types ?
 ```
-on a une base de données mysql.
+on a une base de données mysql avec 4 databases, type system
 ```
+![Screenshot (21)](https://github.com/ashrafkasmi/DevOps-Dauphine-TP/assets/138144966/b1f9fa7d-7f72-42d7-b8d9-c0c125fe933e)
 
 ## Partie 2 : Docker
 
@@ -285,14 +286,29 @@ Notre but, ne l'oublions pas est de déployer wordpress sur Cloud Run !
 
 2. Observer les journaux de Cloud Run (logs) sur : https://console.cloud.google.com/run/detail/us-central1/serveur-wordpress/logs.
    1. Véirifer la présence de l'entrée `No 'wp-config.php' found in /var/www/html, but 'WORDPRESS_...' variables supplied; copying 'wp-config-docker.php' (WORDPRESS_DB_HOST WORDPRESS_DB_PASSWORD WORDPRESS_DB_USER)`
+      
    2. Au bout de 5 min, que se passe-t-il ? 🤯🤯🤯
+      ```
+      échoue parceque container failed to start and listen on the port defined provided by the PORT=8080
+      ```
       
    3. Regarder le resultat de votre commande `terraform apply` et observer les logs de Cloud Run
       
    4. Quelle est la raison de l'erreur ? Que faut-il changer dans les paramètre de notre ressource terraform `google_cloud_run_service` ?
+      ```
+      il faut qu'on ajoute le port dans la config de container
+      ```
 
 3. A l'aide de la documentation terraform, d'internet ou de ChatGPT, ou même d'un certain TP 😌 faites en sorte que Cloud Run soit correctement configuré pour utiliser votre image Docker wordpress.
-
+      ```
+        containers {
+            image = "us-central1-docker.pkg.dev/my-project-372823/website-tools/wordpress-param"
+            ports {
+                container_port = 80
+            }
+        }
+      ```
+      
 4. Autoriser toutes les adresses IP à se connecter à notre base MySQL (sous réserve d'avoir l'utilisateur et le mot de passe évidemment)
    1. Pour le faire, exécuter la commande
       ```bash
