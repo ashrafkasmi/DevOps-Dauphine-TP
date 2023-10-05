@@ -103,7 +103,7 @@ Wordpress dispose d'une image Docker officielle disponible sur [DockerHub](https
           
           /** Loads the WordPress Environment and Template */
           require __DIR__ . '/wp-blog-header.php';
-```
+      ```
 
 3. Supprimez le container puis relancez en un en spécifiant un port binding (une correspondance de port).
     ```
@@ -191,11 +191,11 @@ Wordpress dispose d'une image Docker officielle disponible sur [DockerHub](https
       ```
         # Build the Docker image
         - name: 'gcr.io/cloud-builders/docker'
-          args: ['build', '-t', 'europe-west9-docker.pkg.dev/my-project-372823/website-tools/wordpress-param', '.']
+          args: ['build', '-t', 'us-central1-docker.pkg.dev/my-project-372823/website-tools/wordpress-param', '.']
       
         # Push the Docker image to Google Artifact Registry
         - name: 'gcr.io/cloud-builders/docker'
-          args: ['push', 'europe-west9-docker.pkg.dev/my-project-372823/website-tools/wordpress-param']
+          args: ['push', 'us-central1-docker.pkg.dev/my-project-372823/website-tools/wordpress-param']
       ```
       
    3. Envoyer (`submit`) le job sur Cloud Build et vérifier que l'image a bien été créée
@@ -215,7 +215,18 @@ Notre but, ne l'oublions pas est de déployer wordpress sur Cloud Run !
    L'instance de base données dispose d'une `Adresse IP publique`. Nous allons nous servir de cette valeur pour configurer notre image docker Wordpress qui s'y connectera.
 
 2. Reprendre le Dockerfile de la [Partie 2](#partie-2--docker) et le modifier pour que `WORDPRESS_DB_HOST` soit défini avec l'`Adresse IP publique` de notre instance de base de donnée.
+   ```
+   FROM wordpress
+  ENV WORDPRESS_DB_USER=wordpress
+  ENV WORDPRESS_DB_PASSWORD=ilovedevops
+  ENV WORDPRESS_DB_NAME=wordpress
+  ENV WORDPRESS_DB_HOST=34.31.65.59
+  ```
+
 3. Reconstruire notre image docker et la pousser sur notre Artifact Registry en utilisant cloud build
+  ```
+  gcloud builds submit
+  ```
 
 ### Déployer notre image docker sur Cloud Run
 
