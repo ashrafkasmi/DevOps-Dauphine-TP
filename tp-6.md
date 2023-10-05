@@ -232,33 +232,31 @@ Notre but, ne l'oublions pas est de déployer wordpress sur Cloud Run !
 
 1. Ajouter une ressource Cloud Run à votre code Terraform. Veiller à renseigner le bon tag de l'image docker que l'on vient de publier sur notre dépôt dans le champs `image` :
 
-   ```hcl
-   resource "google_cloud_run_service" "default" {
-   name     = "serveur-wordpress"
-   location = "us-central1"
-
-   template {
-      spec {
-         containers {
-         image = "us-docker.pkg.dev/cloudrun/container/hello"
-         }
-      }
-
-      metadata {
-         annotations = {
-         "autoscaling.knative.dev/maxScale"      = "1000"
-         "run.googleapis.com/cloudsql-instances" = "main-instance"
-         "run.googleapis.com/client-name"        = "terraform"
-         }
-      }
-   }
-
-   traffic {
-      percent         = 100
-      latest_revision = true
-   }
-   }
-   ```
+    ```hcl
+    resource "google_cloud_run_service" "default" {
+        name     = "serveur-wordpress"
+        location = "us-central1"
+    
+        template {
+            spec {
+                containers {
+                image = "us-central1-docker.pkg.dev/my-project-372823/website-tools/wordpress-param"
+                }
+            }
+    
+            metadata {
+                annotations = {
+                        "run.googleapis.com/cloudsql-instances" = "my-project-372823:us-central1:main-instance"
+                }
+            }
+        }
+    
+        traffic {
+        percent         = 100
+        latest_revision = true
+        }
+    }
+    ```
 
    Afin d'autoriser tous les appareils à se connecter à notre Cloud Run, on définit les ressources :
 
@@ -288,7 +286,9 @@ Notre but, ne l'oublions pas est de déployer wordpress sur Cloud Run !
 2. Observer les journaux de Cloud Run (logs) sur : https://console.cloud.google.com/run/detail/us-central1/serveur-wordpress/logs.
    1. Véirifer la présence de l'entrée `No 'wp-config.php' found in /var/www/html, but 'WORDPRESS_...' variables supplied; copying 'wp-config-docker.php' (WORDPRESS_DB_HOST WORDPRESS_DB_PASSWORD WORDPRESS_DB_USER)`
    2. Au bout de 5 min, que se passe-t-il ? 🤯🤯🤯
+      
    3. Regarder le resultat de votre commande `terraform apply` et observer les logs de Cloud Run
+      
    4. Quelle est la raison de l'erreur ? Que faut-il changer dans les paramètre de notre ressource terraform `google_cloud_run_service` ?
 
 3. A l'aide de la documentation terraform, d'internet ou de ChatGPT, ou même d'un certain TP 😌 faites en sorte que Cloud Run soit correctement configuré pour utiliser votre image Docker wordpress.
