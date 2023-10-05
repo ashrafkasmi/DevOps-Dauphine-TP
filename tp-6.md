@@ -35,7 +35,10 @@ Nous allons créer les ressources suivantes à l'aide de Terraform :
 - un compte utilisateur de la base de données
 
 1. Commencer par créer le bucket GCS (Google Cloud Storage) qui servira à stocker le state Terraform.
+   ![Screenshot (19)](https://github.com/ashrafkasmi/DevOps-Dauphine-TP/assets/138144966/9c26dee9-0be4-4f2f-886b-b05ee965644c)
+
 2. Définir les éléments de base nécessaires à la bonne exécution de terraform : utiliser l'exemple sur le [repo du cours](https://github.com/aballiet/DevOps-dauphine-public/tree/main/exemple/cloudbuild-terraform) pour vous aider
+   
 3. Afin de créer la base de données, utiliser la documentation [SQL Database](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/sql_database) et enfin un [SQL User](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/sql_user)
    1. Pour `google_sql_database`, définir `name="wordpress"` et `instance="main-instance"`
    2. Pour `google_sql_user`, définissez le comme ceci :
@@ -47,45 +50,112 @@ Nous allons créer les ressources suivantes à l'aide de Terraform :
       }
       ```
 4. Lancer `terraform plan`, vérifier les changements puis appliquer les changements avec `terraform apply`
+   terraform init
+   pui
+   terraform plan
+   puis
+   terraform apply
 5. Vérifier que notre utilisateur existe bien : https://console.cloud.google.com/sql/instances/main-instance/users (veiller à bien séléctionner le projet GCP sur lequel vous avez déployé vos ressources)
 6. Rendez-vous sur https://console.cloud.google.com/sql/instances/main-instance/databases. Quelles sont les base de données présentes sur votre instance `main-instance` ? Quels sont les types ?
+on a une base de données mysql.
 
 ## Partie 2 : Docker
 
 Wordpress dispose d'une image Docker officielle disponible sur [DockerHub](https://hub.docker.com/_/wordpress)
 
 1. Récupérer l'image sur votre machine (Cloud Shell)
-
+   docker pull wordpress
+   
 2. Lancer l'image docker et ouvrez un shell à l'intérieur de votre container:
+   docker run wordpress
+   docker exec -it c4d3646e8707 bash
    1. Quel est le répertoire courant du container (WORKDIR) ?
+      pwd => /var/www/html
    2. Que contient le fichier `index.php` ?
+      cat index.php =>
+<?php
+/**
+ * Front to the WordPress application. This file doesn't do anything, but loads
+ * wp-blog-header.php which does and tells WordPress to load the theme.
+ *
+ * @package WordPress
+ */
+
+/**
+ * Tells WordPress to load the WordPress theme and output it.
+ *
+ * @var bool
+ */
+define( 'WP_USE_THEMES', true );
+
+/** Loads the WordPress Environment and Template */
+require __DIR__ . '/wp-blog-header.php';
+
 
 3. Supprimez le container puis relancez en un en spécifiant un port binding (une correspondance de port).
+    exit
+    puis
+    docker stop c4d3646e8707
+    docker run -dp 8100:80 wordpress
 
    1. Vous devez pouvoir communiquer avec le port par défaut de wordpress : **80** (choisissez un port entre 8000 et 9000 sur votre machine hôte => cloudshell)
-
+      
    2. Avec la commande `curl`, faites une requêtes depuis votre machine hôte à votre container wordpress. Quelle est la réponse ? (il n'y a pas piège, essayez sur un port non utilisé pour constater la différence)
+     curl http://localhost:8100 => pas de réponse
+     je vais sur http://localhost:8100 => j'ai bien une interface web !
 
    3. Afficher les logs de votre container après avoir fait quelques requêtes, que voyez vous ?
+     docker logs 9f2a1faf17d2
+        172.18.0.1 - - [05/Oct/2023:07:53:35 +0000] "GET / HTTP/1.1" 302 235 "-" "curl/7.74.0"
+        172.18.0.1 - - [05/Oct/2023:07:56:36 +0000] "GET / HTTP/1.1" 302 235 "-" "curl/7.74.0"
+        172.18.0.1 - - [05/Oct/2023:07:56:44 +0000] "GET /?authuser=0&redirectedPreviously=true HTTP/1.1" 302 235 "https://ssh.cloud.google.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
+        172.18.0.1 - - [05/Oct/2023:07:56:44 +0000] "GET /wp-admin/setup-config.php HTTP/1.1" 200 4474 "https://ssh.cloud.google.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
+        172.18.0.1 - - [05/Oct/2023:07:56:49 +0000] "GET /favicon.ico HTTP/1.1" 302 235 "https://8100-cs-744666710802-default.cs-europe-west1-iuzs.cloudshell.dev/wp-admin/setup-config.php" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
+        172.18.0.1 - - [05/Oct/2023:07:56:49 +0000] "GET /wp-admin/setup-config.php HTTP/1.1" 200 4474 "https://8100-cs-744666710802-default.cs-europe-west1-iuzs.cloudshell.dev/wp-admin/setup-config.php" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
+        172.18.0.1 - - [05/Oct/2023:07:56:51 +0000] "POST /wp-admin/setup-config.php?step=0 HTTP/1.1" 200 1365 "https://8100-cs-744666710802-default.cs-europe-west1-iuzs.cloudshell.dev/wp-admin/setup-config.php" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
+        172.18.0.1 - - [05/Oct/2023:07:56:55 +0000] "GET /favicon.ico HTTP/1.1" 302 235 "https://8100-cs-744666710802-default.cs-europe-west1-iuzs.cloudshell.dev/wp-admin/setup-config.php?step=0" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
+        172.18.0.1 - - [05/Oct/2023:07:56:55 +0000] "GET /wp-admin/setup-config.php HTTP/1.1" 200 4474 "https://8100-cs-744666710802-default.cs-europe-west1-iuzs.cloudshell.dev/wp-admin/setup-config.php?step=0" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
+        
    4. Utilisez l'aperçu web pour afficher le résultat du navigateur qui se connecte à votre container wordpress
       1. Utiliser la fonction `Aperçu sur le web`
         ![web_preview](images/wordpress_preview.png)
+        
       2. Modifier le port si celui choisi n'est pas `8000`
+          pour moi, c'est 8100
+          
       3. Une fenètre s'ouvre, que voyez vous ?
+          je retrouve la page web que j'ai trouvé sur http://localhost:8100
+          ![Screenshot (20)](https://github.com/ashrafkasmi/DevOps-Dauphine-TP/assets/138144966/1bc603e0-f371-4706-a637-ff32859f1145)
 
-4. A partir de la documentation, remarquez les paramètres requis pour la configuration de la base de données.
 
-5. Dans la partie 1 du TP (si pas déjà fait), nous allons créer cette base de donnée. Dans cette partie 2 nous allons créer une image docker qui utilise des valeurs spécifiques de paramètres pour la base de données.
+5. A partir de la documentation, remarquez les paramètres requis pour la configuration de la base de données.
+
+6. Dans la partie 1 du TP (si pas déjà fait), nous allons créer cette base de donnée. Dans cette partie 2 nous allons créer une image docker qui utilise des valeurs spécifiques de paramètres pour la base de données.
    1. Créer un Dockerfile
+     touch Dockerfile
+     
    2. Spécifier les valeurs suivantes pour la base de données à l'aide de l'instruction `ENV` (voir [ici](https://stackoverflow.com/questions/57454581/define-environment-variable-in-dockerfile-or-docker-compose)):
-        - `WORDPRESS_DB_USER=wordpress`
-        - `WORDPRESS_DB_PASSWORD=ilovedevops`
-        - `WORDPRESS_DB_NAME=wordpress`
-        - `WORDPRESS_DB_HOST=0.0.0.0`
-   3. Construire l'image docker.
-   4. Lancer une instance de l'image, ouvrez un shell. Vérifier le résultat de la commande `echo $WORDPRESS_DB_PASSWORD`
 
-6. Pipeline d'Intégration Continue (CI):
+        FROM wordpress
+        ENV WORDPRESS_DB_USER=wordpress
+        ENV WORDPRESS_DB_PASSWORD=ilovedevops
+        ENV WORDPRESS_DB_NAME=wordpress
+        ENV WORDPRESS_DB_HOST=0.0.0.0
+
+        
+   3. Construire l'image docker.
+       docker build -t wordpress-param .
+       
+   4. Lancer une instance de l'image, ouvrez un shell. Vérifier le résultat de la commande `echo $WORDPRESS_DB_PASSWORD`
+       docker run -dp 8200:80 wordpress-param
+       puis
+       docker exec -it 19330ede504c bash
+       puis
+       echo $WORDPRESS_DB_PASSWORD
+       => ilovedevops
+       => tout va bien !
+       
+7. Pipeline d'Intégration Continue (CI):
    1. Créer un dépôt de type `DOCKER` sur artifact registry (si pas déjà fait, sinon utiliser celui appelé `website-tools`)
    2. Créer une configuration cloudbuild pour construire l'image docker et la publier sur le depôt Artifact Registry
    3. Envoyer (`submit`) le job sur Cloud Build et vérifier que l'image a bien été créée
