@@ -73,6 +73,7 @@ Wordpress dispose d'une image Docker officielle disponible sur [DockerHub](https
       pwd => /var/www/html
    2. Que contient le fichier `index.php` ?
       cat index.php =>
+```
 <?php
 /**
  * Front to the WordPress application. This file doesn't do anything, but loads
@@ -90,7 +91,7 @@ define( 'WP_USE_THEMES', true );
 
 /** Loads the WordPress Environment and Template */
 require __DIR__ . '/wp-blog-header.php';
-
+```
 
 3. Supprimez le container puis relancez en un en spécifiant un port binding (une correspondance de port).
     exit
