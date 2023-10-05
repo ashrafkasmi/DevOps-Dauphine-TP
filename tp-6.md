@@ -320,13 +320,35 @@ Notre but, ne l'oublions pas est de déployer wordpress sur Cloud Run !
    1. Aller sur : https://console.cloud.google.com/run/detail/us-central1/serveur-wordpress/metrics?
    2. Cliquer sur l'URL de votre Cloud Run : similaire à https://serveur-wordpress-oreldffftq-uc.a.run.app
    3. Que voyez vous ? 🙈
+      ```
+      je peux accèder à ma database !!
+      ```
 
 
 ## BONUS : Partie 4
 
 1. Utiliser Cloud Build pour appliquer les changements d'infrastructure
+   ```
+   j'ajoute deux steps à mon cloudbuild
+   steps:
+    - name: 'hashicorp/terraform:1.0.0'
+      script: terraform init
+  
+    - name: 'hashicorp/terraform:1.0.0'
+      script: terraform apply -auto-approve
+   ```
+   
 2. Quelles critiques du TP pouvez vous faire ? Quels sont les éléments redondants de notre configuration ?
    1. Quels paramètres avons nous dû recopier plusieurs fois ?
+      ```
+      le project-id, image-url
+      ```
+      
    2. Comment pourrions nous faire pour ne pas avoir à les recopier ?
+      ```
+      on peut les définir comme variable d'environnement
+      ```
+      
    3. Quels paramètres de la ressource Cloud Run peuvent être utilisés pour simplifier la gestion de notre application ?
+      
    4. Créer une nouvelle ressource terraform de Cloud Run et appliquer lui les améliorations 😌
