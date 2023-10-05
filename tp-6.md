@@ -94,16 +94,20 @@ require __DIR__ . '/wp-blog-header.php';
 ```
 
 3. Supprimez le container puis relancez en un en spécifiant un port binding (une correspondance de port).
+    ```
     exit
     puis
     docker stop c4d3646e8707
     docker run -dp 8100:80 wordpress
+    ```
 
    1. Vous devez pouvoir communiquer avec le port par défaut de wordpress : **80** (choisissez un port entre 8000 et 9000 sur votre machine hôte => cloudshell)
       
    2. Avec la commande `curl`, faites une requêtes depuis votre machine hôte à votre container wordpress. Quelle est la réponse ? (il n'y a pas piège, essayez sur un port non utilisé pour constater la différence)
+     ```
      curl http://localhost:8100 => pas de réponse
      je vais sur http://localhost:8100 => j'ai bien une interface web !
+     ```
 
    3. Afficher les logs de votre container après avoir fait quelques requêtes, que voyez vous ?
      docker logs 9f2a1faf17d2
@@ -118,6 +122,7 @@ require __DIR__ . '/wp-blog-header.php';
         172.18.0.1 - - [05/Oct/2023:07:56:55 +0000] "GET /favicon.ico HTTP/1.1" 302 235 "https://8100-cs-744666710802-default.cs-europe-west1-iuzs.cloudshell.dev/wp-admin/setup-config.php?step=0" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
         172.18.0.1 - - [05/Oct/2023:07:56:55 +0000] "GET /wp-admin/setup-config.php HTTP/1.1" 200 4474 "https://8100-cs-744666710802-default.cs-europe-west1-iuzs.cloudshell.dev/wp-admin/setup-config.php?step=0" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
         ```
+        
    5. Utilisez l'aperçu web pour afficher le résultat du navigateur qui se connecte à votre container wordpress
       1. Utiliser la fonction `Aperçu sur le web`
         ![web_preview](images/wordpress_preview.png)
@@ -137,18 +142,19 @@ require __DIR__ . '/wp-blog-header.php';
      touch Dockerfile
      
    2. Spécifier les valeurs suivantes pour la base de données à l'aide de l'instruction `ENV` (voir [ici](https://stackoverflow.com/questions/57454581/define-environment-variable-in-dockerfile-or-docker-compose)):
-
+        ```
         FROM wordpress
         ENV WORDPRESS_DB_USER=wordpress
         ENV WORDPRESS_DB_PASSWORD=ilovedevops
         ENV WORDPRESS_DB_NAME=wordpress
         ENV WORDPRESS_DB_HOST=0.0.0.0
-
+        ```
         
    3. Construire l'image docker.
        docker build -t wordpress-param .
        
    4. Lancer une instance de l'image, ouvrez un shell. Vérifier le résultat de la commande `echo $WORDPRESS_DB_PASSWORD`
+       ```
        docker run -dp 8200:80 wordpress-param
        puis
        docker exec -it 19330ede504c bash
@@ -156,6 +162,7 @@ require __DIR__ . '/wp-blog-header.php';
        echo $WORDPRESS_DB_PASSWORD
        => ilovedevops
        => tout va bien !
+       ```
        
 7. Pipeline d'Intégration Continue (CI):
    1. Créer un dépôt de type `DOCKER` sur artifact registry (si pas déjà fait, sinon utiliser celui appelé `website-tools`)
