@@ -161,14 +161,14 @@ Wordpress dispose d'une image Docker officielle disponible sur [DockerHub](https
       ```
      
    2. Spécifier les valeurs suivantes pour la base de données à l'aide de l'instruction `ENV` (voir [ici](https://stackoverflow.com/questions/57454581/define-environment-variable-in-dockerfile-or-docker-compose)):
-        ```
-        FROM wordpress
-        ENV WORDPRESS_DB_USER=wordpress
-        ENV WORDPRESS_DB_PASSWORD=ilovedevops
-        ENV WORDPRESS_DB_NAME=wordpress
-        ENV WORDPRESS_DB_HOST=0.0.0.0
-        ```
-        
+      ```
+      FROM wordpress
+      ENV WORDPRESS_DB_USER=wordpress
+      ENV WORDPRESS_DB_PASSWORD=ilovedevops
+      ENV WORDPRESS_DB_NAME=wordpress
+      ENV WORDPRESS_DB_HOST=0.0.0.0
+      ```
+   
    3. Construire l'image docker.
       ```
       docker build -t wordpress-param .
