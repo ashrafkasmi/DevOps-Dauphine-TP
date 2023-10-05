@@ -215,8 +215,8 @@ Notre but, ne l'oublions pas est de déployer wordpress sur Cloud Run !
    L'instance de base données dispose d'une `Adresse IP publique`. Nous allons nous servir de cette valeur pour configurer notre image docker Wordpress qui s'y connectera.
 
 2. Reprendre le Dockerfile de la [Partie 2](#partie-2--docker) et le modifier pour que `WORDPRESS_DB_HOST` soit défini avec l'`Adresse IP publique` de notre instance de base de donnée.
-   ```
-   FROM wordpress
+  ```
+  FROM wordpress
   ENV WORDPRESS_DB_USER=wordpress
   ENV WORDPRESS_DB_PASSWORD=ilovedevops
   ENV WORDPRESS_DB_NAME=wordpress
