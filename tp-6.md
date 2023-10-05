@@ -50,47 +50,59 @@ Nous allons créer les ressources suivantes à l'aide de Terraform :
       }
       ```
 4. Lancer `terraform plan`, vérifier les changements puis appliquer les changements avec `terraform apply`
+   ```
    terraform init
    pui
    terraform plan
    puis
    terraform apply
+   ```
+   
 5. Vérifier que notre utilisateur existe bien : https://console.cloud.google.com/sql/instances/main-instance/users (veiller à bien séléctionner le projet GCP sur lequel vous avez déployé vos ressources)
 6. Rendez-vous sur https://console.cloud.google.com/sql/instances/main-instance/databases. Quelles sont les base de données présentes sur votre instance `main-instance` ? Quels sont les types ?
+```
 on a une base de données mysql.
+```
 
 ## Partie 2 : Docker
 
 Wordpress dispose d'une image Docker officielle disponible sur [DockerHub](https://hub.docker.com/_/wordpress)
 
 1. Récupérer l'image sur votre machine (Cloud Shell)
+   ```
    docker pull wordpress
+   ```
    
 2. Lancer l'image docker et ouvrez un shell à l'intérieur de votre container:
+   ```
    docker run wordpress
    docker exec -it c4d3646e8707 bash
+   ```
    1. Quel est le répertoire courant du container (WORKDIR) ?
+      ```
       pwd => /var/www/html
+      ```
+      
    2. Que contient le fichier `index.php` ?
+      ```
       cat index.php =>
-```
-<?php
-/**
- * Front to the WordPress application. This file doesn't do anything, but loads
- * wp-blog-header.php which does and tells WordPress to load the theme.
- *
- * @package WordPress
- */
-
-/**
- * Tells WordPress to load the WordPress theme and output it.
- *
- * @var bool
- */
-define( 'WP_USE_THEMES', true );
-
-/** Loads the WordPress Environment and Template */
-require __DIR__ . '/wp-blog-header.php';
+          <?php
+          /**
+           * Front to the WordPress application. This file doesn't do anything, but loads
+           * wp-blog-header.php which does and tells WordPress to load the theme.
+           *
+           * @package WordPress
+           */
+          
+          /**
+           * Tells WordPress to load the WordPress theme and output it.
+           *
+           * @var bool
+           */
+          define( 'WP_USE_THEMES', true );
+          
+          /** Loads the WordPress Environment and Template */
+          require __DIR__ . '/wp-blog-header.php';
 ```
 
 3. Supprimez le container puis relancez en un en spécifiant un port binding (une correspondance de port).
@@ -110,28 +122,33 @@ require __DIR__ . '/wp-blog-header.php';
      ```
 
    3. Afficher les logs de votre container après avoir fait quelques requêtes, que voyez vous ?
-     docker logs 9f2a1faf17d2
-        ```
-        172.18.0.1 - - [05/Oct/2023:07:53:35 +0000] "GET / HTTP/1.1" 302 235 "-" "curl/7.74.0"
-        172.18.0.1 - - [05/Oct/2023:07:56:36 +0000] "GET / HTTP/1.1" 302 235 "-" "curl/7.74.0"
-        172.18.0.1 - - [05/Oct/2023:07:56:44 +0000] "GET /?authuser=0&redirectedPreviously=true HTTP/1.1" 302 235 "https://ssh.cloud.google.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
-        172.18.0.1 - - [05/Oct/2023:07:56:44 +0000] "GET /wp-admin/setup-config.php HTTP/1.1" 200 4474 "https://ssh.cloud.google.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
-        172.18.0.1 - - [05/Oct/2023:07:56:49 +0000] "GET /favicon.ico HTTP/1.1" 302 235 "https://8100-cs-744666710802-default.cs-europe-west1-iuzs.cloudshell.dev/wp-admin/setup-config.php" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
-        172.18.0.1 - - [05/Oct/2023:07:56:49 +0000] "GET /wp-admin/setup-config.php HTTP/1.1" 200 4474 "https://8100-cs-744666710802-default.cs-europe-west1-iuzs.cloudshell.dev/wp-admin/setup-config.php" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
-        172.18.0.1 - - [05/Oct/2023:07:56:51 +0000] "POST /wp-admin/setup-config.php?step=0 HTTP/1.1" 200 1365 "https://8100-cs-744666710802-default.cs-europe-west1-iuzs.cloudshell.dev/wp-admin/setup-config.php" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
-        172.18.0.1 - - [05/Oct/2023:07:56:55 +0000] "GET /favicon.ico HTTP/1.1" 302 235 "https://8100-cs-744666710802-default.cs-europe-west1-iuzs.cloudshell.dev/wp-admin/setup-config.php?step=0" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
-        172.18.0.1 - - [05/Oct/2023:07:56:55 +0000] "GET /wp-admin/setup-config.php HTTP/1.1" 200 4474 "https://8100-cs-744666710802-default.cs-europe-west1-iuzs.cloudshell.dev/wp-admin/setup-config.php?step=0" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
-        ```
+      ```
+      docker logs 9f2a1faf17d2 =>
+
+          172.18.0.1 - - [05/Oct/2023:07:53:35 +0000] "GET / HTTP/1.1" 302 235 "-" "curl/7.74.0"
+          172.18.0.1 - - [05/Oct/2023:07:56:36 +0000] "GET / HTTP/1.1" 302 235 "-" "curl/7.74.0"
+          172.18.0.1 - - [05/Oct/2023:07:56:44 +0000] "GET /?authuser=0&redirectedPreviously=true HTTP/1.1" 302 235 "https://ssh.cloud.google.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
+          172.18.0.1 - - [05/Oct/2023:07:56:44 +0000] "GET /wp-admin/setup-config.php HTTP/1.1" 200 4474 "https://ssh.cloud.google.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
+          172.18.0.1 - - [05/Oct/2023:07:56:49 +0000] "GET /favicon.ico HTTP/1.1" 302 235 "https://8100-cs-744666710802-default.cs-europe-west1-iuzs.cloudshell.dev/wp-admin/setup-config.php" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
+          172.18.0.1 - - [05/Oct/2023:07:56:49 +0000] "GET /wp-admin/setup-config.php HTTP/1.1" 200 4474 "https://8100-cs-744666710802-default.cs-europe-west1-iuzs.cloudshell.dev/wp-admin/setup-config.php" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
+          172.18.0.1 - - [05/Oct/2023:07:56:51 +0000] "POST /wp-admin/setup-config.php?step=0 HTTP/1.1" 200 1365 "https://8100-cs-744666710802-default.cs-europe-west1-iuzs.cloudshell.dev/wp-admin/setup-config.php" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
+          172.18.0.1 - - [05/Oct/2023:07:56:55 +0000] "GET /favicon.ico HTTP/1.1" 302 235 "https://8100-cs-744666710802-default.cs-europe-west1-iuzs.cloudshell.dev/wp-admin/setup-config.php?step=0" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
+          172.18.0.1 - - [05/Oct/2023:07:56:55 +0000] "GET /wp-admin/setup-config.php HTTP/1.1" 200 4474 "https://8100-cs-744666710802-default.cs-europe-west1-iuzs.cloudshell.dev/wp-admin/setup-config.php?step=0" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
+      ```
         
    5. Utilisez l'aperçu web pour afficher le résultat du navigateur qui se connecte à votre container wordpress
       1. Utiliser la fonction `Aperçu sur le web`
         ![web_preview](images/wordpress_preview.png)
         
       2. Modifier le port si celui choisi n'est pas `8000`
+          ```
           pour moi, c'est 8100
+          ```
           
       3. Une fenètre s'ouvre, que voyez vous ?
+          ```
           je retrouve la page web que j'ai trouvé sur http://localhost:8100
+          ```
           ![Screenshot (20)](https://github.com/ashrafkasmi/DevOps-Dauphine-TP/assets/138144966/1bc603e0-f371-4706-a637-ff32859f1145)
 
 
@@ -139,7 +156,9 @@ require __DIR__ . '/wp-blog-header.php';
 
 6. Dans la partie 1 du TP (si pas déjà fait), nous allons créer cette base de donnée. Dans cette partie 2 nous allons créer une image docker qui utilise des valeurs spécifiques de paramètres pour la base de données.
    1. Créer un Dockerfile
-     touch Dockerfile
+      ```
+      touch Dockerfile
+      ```
      
    2. Spécifier les valeurs suivantes pour la base de données à l'aide de l'instruction `ENV` (voir [ici](https://stackoverflow.com/questions/57454581/define-environment-variable-in-dockerfile-or-docker-compose)):
         ```
@@ -151,7 +170,9 @@ require __DIR__ . '/wp-blog-header.php';
         ```
         
    3. Construire l'image docker.
-       docker build -t wordpress-param .
+      ```
+      docker build -t wordpress-param .
+      ```
        
    4. Lancer une instance de l'image, ouvrez un shell. Vérifier le résultat de la commande `echo $WORDPRESS_DB_PASSWORD`
        ```
@@ -167,7 +188,20 @@ require __DIR__ . '/wp-blog-header.php';
 7. Pipeline d'Intégration Continue (CI):
    1. Créer un dépôt de type `DOCKER` sur artifact registry (si pas déjà fait, sinon utiliser celui appelé `website-tools`)
    2. Créer une configuration cloudbuild pour construire l'image docker et la publier sur le depôt Artifact Registry
+      ```
+        # Build the Docker image
+        - name: 'gcr.io/cloud-builders/docker'
+          args: ['build', '-t', 'europe-west9-docker.pkg.dev/my-project-372823/website-tools/wordpress-param', '.']
+      
+        # Push the Docker image to Google Artifact Registry
+        - name: 'gcr.io/cloud-builders/docker'
+          args: ['push', 'europe-west9-docker.pkg.dev/my-project-372823/website-tools/wordpress-param']
+      ```
+      
    3. Envoyer (`submit`) le job sur Cloud Build et vérifier que l'image a bien été créée
+      ```
+      gcloud builds submit
+      ```
 
 ## Partie 3 : Déployer Wordpress sur Cloud Run 🔥
 
